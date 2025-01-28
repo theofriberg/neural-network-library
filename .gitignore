@@ -31,5 +31,9 @@
 *.out
 *.app
 
-# Other files
+# Build directory
+build/
+
+# Other files and directories
 TODO.txt
+.vscode/
