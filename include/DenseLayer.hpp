@@ -1,4 +1,4 @@
-#include <Eigen/Dense>
+#include "Eigen/Dense"
 #include "Layer.hpp"
 
 class DenseLayer : public Layer
@@ -36,9 +36,25 @@ public:
      */
     Eigen::MatrixXd forward(const Eigen::MatrixXd &input) override;
 
-    Eigen::MatrixXd backward(const Eigen::MatrixXd &gradient) override;
+    /**
+     * @brief Performs the backward propagation step for the dense layer.
+     *
+     * This function computes the gradients of the weights and biases with respect to the given gradient,
+     * and updates the weights and biases accordingly. It also computes the gradient to be passed to the
+     * previous layer.
+     *
+     * @param gradient The gradient of the loss function with respect to the output of the dense layer.
+     * @param learning_rate The learning rate for weight and bias updates.
+     *
+     * @return The gradient to be passed to the previous layer.
+     */
+    Eigen::MatrixXd backward(const Eigen::MatrixXd &gradient, double learning_rate = 1) override;
+
+    Eigen::MatrixXd getWeights() const { return _weights; }
+    Eigen::VectorXd getBiases() const { return _biases; }
 
 private:
     Eigen::MatrixXd _weights;
     Eigen::VectorXd _biases;
+    Eigen::MatrixXd _input_cache; // Cache for the input matrix during the forward pass
 };

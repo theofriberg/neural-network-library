@@ -34,5 +34,6 @@
 # Build directory
 build/
 
-# Other files
+# Other files and directories
 TODO.txt
+.vscode/
