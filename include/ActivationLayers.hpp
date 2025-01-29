@@ -10,16 +10,19 @@
 
 class ReLU : public ActivationLayer
 {
+public:
     ReLU() : ActivationLayer(ActivationFunctions::relu, ActivationFunctions::relu_prime) {}
 };
 
 class Tanh : public ActivationLayer
 {
+public:
     Tanh() : ActivationLayer(ActivationFunctions::tanh, ActivationFunctions::tanh_prime) {}
 };
 
 class Sigmoid : public ActivationLayer
 {
+public:
     Sigmoid() : ActivationLayer(ActivationFunctions::sigmoid, ActivationFunctions::sigmoid_prime) {}
 };
 

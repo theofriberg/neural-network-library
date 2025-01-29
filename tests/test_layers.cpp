@@ -2,6 +2,7 @@
 
 #include "../include/Eigen/Dense"
 #include "../include/DenseLayer.hpp"
+#include "../include/ActivationLayers.hpp"
 
 #include <iostream>
 
@@ -11,13 +12,11 @@ protected:
     // Set up a DenseLayer with 3 inputs and 2 outputs (arbitrary values for testing)
     DenseLayer *layer;
 
-    // Set up before each test
     void SetUp() override
     {
         layer = new DenseLayer(3, 2);
     }
 
-    // Clean up after each test
     void TearDown() override
     {
         delete layer;
@@ -130,6 +129,60 @@ TEST_F(DenseLayerTest, ZeroGradientTest)
 
     EXPECT_TRUE(initial_weights.isApprox(updated_weights));
     EXPECT_TRUE(initial_biases.isApprox(updated_biases));
+}
+
+class ActivationLayerTest : public ::testing::Test
+{
+protected:
+    // Set up a ReLU activation layer
+    ReLU *relu_layer;
+
+    void SetUp() override
+    {
+        relu_layer = new ReLU();
+    }
+
+    void TearDown() override
+    {
+        delete relu_layer;
+    }
+};
+
+TEST_F(ActivationLayerTest, ReLUForward)
+{
+    Eigen::MatrixXd input(2, 2);
+    input << -1, 2,
+        0, -3;
+
+    Eigen::MatrixXd expected(2, 2);
+    expected << 0, 2,
+        0, 0;
+
+    // Ensure forward gives expected output
+    Eigen::MatrixXd output = relu_layer->forward(input);
+    EXPECT_TRUE(output.isApprox(expected));
+}
+
+TEST_F(ActivationLayerTest, ReLUBackward)
+{
+    Eigen::MatrixXd input(2, 2);
+    input << -1, 2,
+        0, -3;
+
+    Eigen::MatrixXd gradient(2, 2);
+    gradient << 0.1, 0.2,
+        0.3, 0.4;
+
+    Eigen::MatrixXd expected_gradient(2, 2);
+    expected_gradient << 0, 0.002,
+        0, 0;
+
+    // Perform a forward pass
+    Eigen::MatrixXd _ = relu_layer->forward(input);
+
+    // Ensure backward gives expected gradient
+    Eigen::MatrixXd relu_gradient = relu_layer->backward(gradient, 0.01);
+    EXPECT_TRUE(relu_gradient.isApprox(expected_gradient));
 }
 
 int main(int argc, char **argv)
