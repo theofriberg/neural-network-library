@@ -1,3 +1,6 @@
+#ifndef DENSE_LAYER_HPP
+#define DENSE_LAYER_HPP
+
 #include "Eigen/Dense"
 #include "Layer.hpp"
 
@@ -58,3 +61,5 @@ private:
     Eigen::VectorXd _biases;
     Eigen::MatrixXd _input_cache; // Cache for the input matrix during the forward pass
 };
+
+#endif // DENSE_LAYER_HPP
