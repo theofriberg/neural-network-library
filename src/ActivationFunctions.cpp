@@ -38,8 +38,8 @@ Eigen::MatrixXd ActivationFunctions::sigmoid_prime(const Eigen::MatrixXd &matrix
 Eigen::MatrixXd ActivationFunctions::softmax(const Eigen::MatrixXd &matrix)
 {
     Eigen::VectorXd row_max_vals = matrix.rowwise().maxCoeff();
-    Eigen::MatrixXd stabilized_matrix = matrix.rowwise() - row_max_vals.transpose();
+    Eigen::MatrixXd stabilized_matrix = matrix.array().colwise() - row_max_vals.array();
     Eigen::MatrixXd softmax_values = stabilized_matrix.array().exp();
     Eigen::VectorXd sum_softmax_values = softmax_values.rowwise().sum();
-    return softmax_values.array().rowwise() / sum_softmax_values.transpose().array();
+    return softmax_values.array().colwise() / sum_softmax_values.array();
 }

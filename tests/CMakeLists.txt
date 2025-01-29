@@ -28,3 +28,4 @@ endfunction()
 enable_testing()
 
 add_gtest_executable(test-layers test_layers.cpp)
+add_gtest_executable(test-activation-fns test_activation-fns.cpp)
