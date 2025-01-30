@@ -6,7 +6,7 @@ Eigen::MatrixXd ActivationFunctions::relu(const Eigen::MatrixXd &matrix)
     return matrix.cwiseMax(0);
 }
 
-Eigen::MatrixXd ActivationFunctions::relu_prime(const Eigen::MatrixXd &matrix)
+Eigen::MatrixXd ActivationFunctions::reluPrime(const Eigen::MatrixXd &matrix)
 {
     return (matrix.array() > 0).cast<double>();
 }
@@ -17,7 +17,7 @@ Eigen::MatrixXd ActivationFunctions::tanh(const Eigen::MatrixXd &matrix)
     return (mat_exp.array() - 1) / (mat_exp.array() + 1);
 }
 
-Eigen::MatrixXd ActivationFunctions::tanh_prime(const Eigen::MatrixXd &matrix)
+Eigen::MatrixXd ActivationFunctions::tanhPrime(const Eigen::MatrixXd &matrix)
 {
     Eigen::MatrixXd tanh_square = tanh(matrix).array().square();
     return 1 - tanh_square.array();
@@ -29,7 +29,7 @@ Eigen::MatrixXd ActivationFunctions::sigmoid(const Eigen::MatrixXd &matrix)
     return 1 / (1 + mat_exp.array());
 }
 
-Eigen::MatrixXd ActivationFunctions::sigmoid_prime(const Eigen::MatrixXd &matrix)
+Eigen::MatrixXd ActivationFunctions::sigmoidPrime(const Eigen::MatrixXd &matrix)
 {
     Eigen::MatrixXd sig_vals = sigmoid(matrix).array();
     return sig_vals.array() * (1 - sig_vals.array());

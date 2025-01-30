@@ -29,7 +29,7 @@ TEST(ActivationFunctionsTest, ReLU_Prime)
     expected << 0, 1,
         0, 0;
 
-    Eigen::MatrixXd result = ActivationFunctions::relu_prime(input);
+    Eigen::MatrixXd result = ActivationFunctions::reluPrime(input);
     EXPECT_TRUE(result.isApprox(expected));
 }
 
@@ -58,7 +58,7 @@ TEST(ActivationFunctionsTest, Sigmoid_Prime)
     Eigen::MatrixXd sigmoid_vals = ActivationFunctions::sigmoid(input);
     Eigen::MatrixXd expected = sigmoid_vals.array() * (1 - sigmoid_vals.array());
 
-    Eigen::MatrixXd result = ActivationFunctions::sigmoid_prime(input);
+    Eigen::MatrixXd result = ActivationFunctions::sigmoidPrime(input);
     EXPECT_TRUE(result.isApprox(expected, 1e-5));
 }
 
@@ -87,7 +87,7 @@ TEST(ActivationFunctionsTest, Softmax)
     Eigen::VectorXd sum_rows = softmax_result.rowwise().sum();
     std::cout << "Sum of rows: " << sum_rows.transpose() << std::endl;
 
-        // Each row of softmax should sum to 1
+    // Each row of softmax should sum to 1
     EXPECT_TRUE(sum_rows.isApprox(Eigen::VectorXd::Ones(2), 1e-5));
 }
 
