@@ -19,6 +19,7 @@ function(add_gtest_executable test_name test_file)
 
   # Add include directories for tests
   target_include_directories(${test_name} PRIVATE ${CMAKE_SOURCE_DIR}/include ${CMAKE_SOURCE_DIR}/include/Eigen)
+  target_include_directories(${test_name} PRIVATE ${gtest_SOURCE_DIR}/include ${gtest_SOURCE_DIR})
 
   # Register the test as a CTest entry
   add_test(NAME ${test_name} COMMAND ${test_name} --gtest_color=yes --gtest_fail_fast)
@@ -27,3 +28,4 @@ endfunction()
 enable_testing()
 
 add_gtest_executable(test-layers test_layers.cpp)
+add_gtest_executable(test-activation-fns test_activation-fns.cpp)
