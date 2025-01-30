@@ -11,19 +11,19 @@
 class ReLU : public ActivationLayer
 {
 public:
-    ReLU() : ActivationLayer(ActivationFunctions::relu, ActivationFunctions::relu_prime) {}
+    ReLU() : ActivationLayer(ActivationFunctions::relu, ActivationFunctions::reluPrime) {}
 };
 
 class Tanh : public ActivationLayer
 {
 public:
-    Tanh() : ActivationLayer(ActivationFunctions::tanh, ActivationFunctions::tanh_prime) {}
+    Tanh() : ActivationLayer(ActivationFunctions::tanh, ActivationFunctions::tanhPrime) {}
 };
 
 class Sigmoid : public ActivationLayer
 {
 public:
-    Sigmoid() : ActivationLayer(ActivationFunctions::sigmoid, ActivationFunctions::sigmoid_prime) {}
+    Sigmoid() : ActivationLayer(ActivationFunctions::sigmoid, ActivationFunctions::sigmoidPrime) {}
 };
 
 #endif // ACTTIVATION_LAYERS_HPP
