@@ -2,6 +2,7 @@
 
 #include <fstream>
 #include <iostream>
+#include <stdexcept>
 
 void Network::train(const std::vector<Eigen::MatrixXd> &input_batch,
                     const std::vector<Eigen::MatrixXd> &labels, int epochs, double learning_rate)
@@ -24,6 +25,16 @@ void Network::train(const std::vector<Eigen::MatrixXd> &input_batch,
 Eigen::MatrixXd Network::predict(const Eigen::MatrixXd &input_data) const
 {
     return _forward(input_data);
+}
+
+void Network::saveModel(std::string &filename) const
+{
+    throw std::logic_error("saveModel() not yet implemented");
+}
+
+void Network::loadModel(std::string &filename)
+{
+    throw std::logic_error("loadModel() not yet implemented");
 }
 
 void Network::addLayer(Layer *layer) { _layers.push_back(layer); }
