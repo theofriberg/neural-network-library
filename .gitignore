@@ -37,3 +37,6 @@ build/
 # Other files and directories
 TODO.txt
 .vscode/
+.cache/
+.idea/
+.clang-format
