@@ -25,6 +25,6 @@ target_link_libraries(neural_network_lib PRIVATE neural_network)
 
 target_include_directories(neural_network_lib PRIVATE include/Eigen)
 
-# Add the tests subdirectory
+# Add subdirectories
 add_subdirectory(tests)
-
+add_subdirectory(examples)
