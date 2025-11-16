@@ -1,4 +1,4 @@
-#include "../include/Eigen/Dense"
+#include <Eigen/Dense>
 #include "../include/ActivationFunctions.hpp"
 
 Eigen::MatrixXd ActivationFunctions::relu(const Eigen::MatrixXd &matrix)

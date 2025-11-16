@@ -1,7 +1,7 @@
 #ifndef DENSE_LAYER_HPP
 #define DENSE_LAYER_HPP
 
-#include "Eigen/Dense"
+#include <Eigen/Dense>
 #include "Layer.hpp"
 
 class DenseLayer : public Layer {

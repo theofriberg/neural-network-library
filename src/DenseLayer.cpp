@@ -1,4 +1,4 @@
-#include "../include/Eigen/Dense"
+#include <Eigen/Dense>
 #include "../include/DenseLayer.hpp"
 
 #include <iostream>

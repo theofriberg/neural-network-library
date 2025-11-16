@@ -1,7 +1,7 @@
 #ifndef LOSS_FUNCTIONS_HPP
 #define LOSS_FUNCTIONS_HPP
 
-#include "Eigen/Dense"
+#include <Eigen/Dense>
 
 namespace LossFunctions
 {

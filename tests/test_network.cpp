@@ -1,5 +1,5 @@
+#include <Eigen/Dense>
 #include "DenseLayer.hpp"
-#include "Eigen/Dense"
 #include "LossFunctions.hpp"
 #include "Network.hpp"
 #include <gtest/gtest.h>

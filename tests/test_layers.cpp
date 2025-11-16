@@ -1,7 +1,7 @@
 #include <gtest/gtest.h>
 #define UNIT_TEST
 
-#include "../include/Eigen/Dense"
+#include <Eigen/Dense>
 #include "../include/DenseLayer.hpp"
 #include "../include/ActivationLayers.hpp"
 #include "../include/ConvolutionalLayer.hpp"

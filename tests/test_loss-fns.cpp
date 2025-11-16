@@ -1,5 +1,5 @@
 #include <gtest/gtest.h>
-#include "../include/Eigen/Dense"
+#include <Eigen/Dense>
 #include "../include/LossFunctions.hpp"
 
 TEST(LossFunctionsTest, MSE)

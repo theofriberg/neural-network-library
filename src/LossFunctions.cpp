@@ -1,4 +1,4 @@
-#include "../include/Eigen/Dense"
+#include <Eigen/Dense>
 #include "../include/LossFunctions.hpp"
 
 #include <iostream>

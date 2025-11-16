@@ -1,6 +1,6 @@
 #include <gtest/gtest.h>
+#include <Eigen/Dense>
 #include "../include/CorrelationCalculator.hpp"
-#include "../include/Eigen/Dense"
 
 TEST(CorrelationCalculatorTest, CorrelationValid) {
     Eigen::MatrixXd subject(3, 3);

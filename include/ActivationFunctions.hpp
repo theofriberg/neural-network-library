@@ -1,7 +1,7 @@
 #ifndef ACTIVATION_FUNCTIONS_HPP
 #define ACTIVATION_FUNCTIONS_HPP
 
-#include "Eigen/Dense"
+#include <Eigen/Dense>
 
 namespace ActivationFunctions
 {

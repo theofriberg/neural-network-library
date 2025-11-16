@@ -1,7 +1,7 @@
 #ifndef CORRELATION_CALCULATOR_HPP
 #define CORRELATION_CALCULATOR_HPP
 
-#include "Eigen/Dense"
+#include <Eigen/Dense>
 
 class CorrelationCalculator {
 

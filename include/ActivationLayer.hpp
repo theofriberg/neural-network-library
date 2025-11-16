@@ -1,7 +1,7 @@
 #ifndef ACTIVATION_LAYER_HPP
 #define ACTIVATION_LAYER_HPP
 
-#include "Eigen/Dense"
+#include <Eigen/Dense>
 #include "Layer.hpp"
 
 class ActivationLayer : public Layer {

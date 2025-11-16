@@ -1,6 +1,6 @@
 #include <gtest/gtest.h>
+#include <Eigen/Dense>
 #include "../include/ActivationFunctions.hpp"
-#include "../include/Eigen/Dense"
 #include <iostream>
 
 // Test ReLU Activation Function
