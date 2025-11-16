@@ -1,7 +1,7 @@
 #ifndef CONVOLUTIONAL_LAYER_HPP
 #define CONVOLUTIONAL_LAYER_HPP
 
-#include "Eigen/Dense"
+#include <Eigen/Dense>
 #include "Layer.hpp"
 
 class ConvolutionalLayer : public Layer {
@@ -55,11 +55,11 @@ private:
 
 #ifdef UNIT_TEST
 public:
-    Eigen::MatrixXd& getKernels() { return _kernels; }
-    Eigen::VectorXd& getBiases() { return _biases; }
+    std::vector<Eigen::MatrixXd>& getKernels() { return _kernels; }
+    std::vector<double>& getBiases() { return _biases; }
 
-    void setKernels(const Eigen::MatrixXd& kernels) { _kernels = kernels; }
-    void setBiases(const Eigen::VectorXd& biases) { _biases = biases; }
+    void setKernels(const std::vector<Eigen::MatrixXd>& kernels) { _kernels = kernels; }
+    void setBiases(const std::vector<double>& biases) { _biases = biases; }
 #endif
 };
 
