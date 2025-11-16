@@ -1,8 +1,10 @@
 #include <gtest/gtest.h>
+#define UNIT_TEST
 
 #include "../include/Eigen/Dense"
 #include "../include/DenseLayer.hpp"
 #include "../include/ActivationLayers.hpp"
+#include "../include/ConvolutionalLayer.hpp"
 
 #include <iostream>
 
@@ -184,6 +186,49 @@ TEST_F(ActivationLayerTest, ReLUBackward)
     Eigen::MatrixXd relu_gradient = relu_layer->backward(gradient, 0.01);
     EXPECT_TRUE(relu_gradient.isApprox(expected_gradient));
 }
+
+class ConvolutionalLayerTest : public ::testing::Test {
+protected:
+    ConvolutionalLayer* conv_layer;
+
+    void SetUp() override {
+        // Create a layer with 1 filter and kernel size 2
+        conv_layer = new ConvolutionalLayer(2, 1, "conv_test");
+
+        // Set deterministic kernel and bias values using test accessors
+        Eigen::MatrixXd kernels(1, 4);  // 1 filter, 2x2 flattened
+        kernels << 1, 0, 0, -1;
+        conv_layer->setKernels(kernels);
+
+        Eigen::VectorXd biases(1);
+        biases << 0;
+        conv_layer->setBiases(biases);
+    }
+
+    void TearDown() override {
+        delete conv_layer;
+    }
+};
+
+TEST_F(ConvolutionalLayerTest, ForwardSingleFilter) {
+    Eigen::MatrixXd input(3, 3);
+    input << 1, 2, 3,
+             4, 5, 6,
+             7, 8, 9;
+
+    // Manually computed expected output
+    Eigen::MatrixXd expected(2, 2);
+    expected << -4, -4,
+                -4, -4;
+
+    Eigen::MatrixXd output = conv_layer->forward(input);
+
+    EXPECT_EQ(output.rows(), 2);
+    EXPECT_EQ(output.cols(), 2);
+    EXPECT_TRUE(output.isApprox(expected));
+}
+
+
 
 int main(int argc, char **argv)
 {
