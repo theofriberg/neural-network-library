@@ -6,11 +6,11 @@
 class CorrelationCalculator {
 
     public:
-        static Eigen::MatrixXd crossCorrelate(Eigen::MatrixXd &subject, Eigen::MatrixXd &kernel);
-        static Eigen::MatrixXd convolve(Eigen::MatrixXd &subject, Eigen::MatrixXd &kernel);
+        static Eigen::MatrixXd crossCorrelate(const Eigen::MatrixXd &subject, const Eigen::MatrixXd &kernel);
+        static Eigen::MatrixXd convolve(const Eigen::MatrixXd &subject, const Eigen::MatrixXd &kernel);
     
     private:
-        static Eigen::MatrixXd rotate180(Eigen::MatrixXd &matrix);
+        static Eigen::MatrixXd rotate180(const Eigen::MatrixXd &matrix);
 };
 
 

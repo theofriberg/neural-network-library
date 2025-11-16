@@ -1,12 +1,12 @@
 #include "../include/CorrelationCalculator.hpp"
 #include <iostream>
 
-Eigen::MatrixXd CorrelationCalculator::convolve(Eigen::MatrixXd &subject, Eigen::MatrixXd &kernel) {
+Eigen::MatrixXd CorrelationCalculator::convolve(const Eigen::MatrixXd &subject, const Eigen::MatrixXd &kernel) {
     Eigen::MatrixXd kernel_rot = rotate180(kernel);
     return crossCorrelate(subject, kernel_rot);
 }
 
-Eigen::MatrixXd CorrelationCalculator::crossCorrelate(Eigen::MatrixXd &subject, Eigen::MatrixXd &kernel) {
+Eigen::MatrixXd CorrelationCalculator::crossCorrelate(const Eigen::MatrixXd &subject, const Eigen::MatrixXd &kernel) {
     int kernel_rows = kernel.rows();
     int kernel_cols = kernel.cols();
     int subject_rows = subject.rows();
@@ -41,6 +41,6 @@ Eigen::MatrixXd CorrelationCalculator::crossCorrelate(Eigen::MatrixXd &subject, 
     return output;
 }
 
-Eigen::MatrixXd CorrelationCalculator::rotate180(Eigen::MatrixXd &matrix) {
+Eigen::MatrixXd CorrelationCalculator::rotate180(const Eigen::MatrixXd &matrix) {
     return matrix.colwise().reverse().rowwise().reverse();
 }
