@@ -4,6 +4,12 @@ project(neural-network-lib VERSION 1.0)
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
+# Debug build type
+if(NOT CMAKE_BUILD_TYPE)
+  set(CMAKE_BUILD_TYPE Debug)
+endif()
+
+
 # Fetch Eigen
 include(FetchContent)
 FetchContent_Declare(
@@ -29,7 +35,6 @@ target_link_libraries(neural_network PUBLIC Eigen3::Eigen)
 # Main executable
 add_executable(neural_network_lib src/main.cpp)
 target_link_libraries(neural_network_lib PRIVATE neural_network)
-
 
 # Add test + example subdirectories
 add_subdirectory(tests)

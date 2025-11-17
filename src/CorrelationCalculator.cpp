@@ -28,12 +28,7 @@ Eigen::MatrixXd CorrelationCalculator::crossCorrelate(const Eigen::MatrixXd &sub
     {
         for (int j = 0; j < output_cols; j++)
         {
-            Eigen::Map<Eigen::MatrixXd, 0, Eigen::Stride<Eigen::Dynamic,Eigen::Dynamic>> subject_patch(
-                padded_subject.data() + i + j * padded_subject.rows(),
-                kernel_rows,
-                kernel_cols,
-                Eigen::Stride<Eigen::Dynamic, Eigen::Dynamic>(padded_subject.rows(), 1)
-            );
+            Eigen::MatrixXd subject_patch = padded_subject.block(i, j, kernel_rows, kernel_cols);
             output(i, j) = (subject_patch.array() * kernel.array()).sum();
         }
     }

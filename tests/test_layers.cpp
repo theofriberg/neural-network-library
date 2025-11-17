@@ -196,12 +196,13 @@ protected:
         conv_layer = new ConvolutionalLayer(2, 1, "conv_test");
 
         // Set deterministic kernel and bias values using test accessors
-        Eigen::MatrixXd kernels(1, 4);  // 1 filter, 2x2 flattened
-        kernels << 1, 0, 0, -1;
-        conv_layer->setKernels(kernels);
+        Eigen::MatrixXd kernels(2, 2);
+        kernels << 1, 0, 
+                    0, -1;
+        std::vector<Eigen::MatrixXd> kernel_vec = { kernels }; // 1 filter, 2x2
+        conv_layer->setKernels(kernel_vec);
 
-        Eigen::VectorXd biases(1);
-        biases << 0;
+        std::vector<double> biases = { 0.0 };
         conv_layer->setBiases(biases);
     }
 
@@ -210,21 +211,25 @@ protected:
     }
 };
 
+// Test för forward pass med single filter
 TEST_F(ConvolutionalLayerTest, ForwardSingleFilter) {
     Eigen::MatrixXd input(3, 3);
     input << 1, 2, 3,
              4, 5, 6,
              7, 8, 9;
 
-    // Manually computed expected output
-    Eigen::MatrixXd expected(2, 2);
-    expected << -4, -4,
-                -4, -4;
+    // Manuell beräkning av förväntat output
+    Eigen::MatrixXd expected(4, 4);
+    // Convolution: (top-left 2x2) = 1*1 + 0*2 + 0*4 + (-1)*5 = 1 - 5 = -4
+    expected << 1, 2, 3, 0,
+                4, 4, 4, -3,
+                7, 4, 4, -6,
+                0, -7, -8, -9;
 
     Eigen::MatrixXd output = conv_layer->forward(input);
 
-    EXPECT_EQ(output.rows(), 2);
-    EXPECT_EQ(output.cols(), 2);
+    EXPECT_EQ(output.rows(), 4);
+    EXPECT_EQ(output.cols(), 4);
     EXPECT_TRUE(output.isApprox(expected));
 }
 

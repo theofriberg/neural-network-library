@@ -7,15 +7,15 @@ Eigen::MatrixXd ConvolutionalLayer::forward(const Eigen::MatrixXd &input) {
     int input_rows = input.rows();
     int input_cols = input.cols();
 
-    int output_rows = input_rows - _kernel_size + 1;
-    int output_cols = input_cols - _kernel_size + 1;
+    int output_rows = input_rows + _kernel_size - 1;
+    int output_cols = input_cols + _kernel_size - 1;
 
     Eigen::MatrixXd output(output_rows, output_cols * _num_filters);
 
     // Perform convolution operation
     for (int f = 0; f < _num_filters; ++f) {
         output.block(0, f * output_cols, output_rows, output_cols) =
-            CorrelationCalculator::convolve(const_cast<Eigen::MatrixXd&>(input), _kernels[f]);
+            CorrelationCalculator::convolve(input, _kernels[f]);
     }
 
     return output;

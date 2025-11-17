@@ -58,8 +58,8 @@ public:
     std::vector<Eigen::MatrixXd>& getKernels() { return _kernels; }
     std::vector<double>& getBiases() { return _biases; }
 
-    void setKernels(const std::vector<Eigen::MatrixXd>& kernels) { _kernels = kernels; }
-    void setBiases(const std::vector<double>& biases) { _biases = biases; }
+    void setKernels(std::vector<Eigen::MatrixXd>& kernels) { _kernels = kernels; }
+    void setBiases(std::vector<double>& biases) { _biases = biases; }
 #endif
 };
 
