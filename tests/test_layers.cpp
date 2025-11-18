@@ -193,7 +193,7 @@ protected:
 
     void SetUp() override {
         // Create a layer with 1 filter and kernel size 2
-        conv_layer = new ConvolutionalLayer(2, 1, "conv_test");
+        conv_layer = new ConvolutionalLayer(2, 1);
 
         // Set deterministic kernel and bias values using test accessors
         Eigen::MatrixXd kernels(2, 2);

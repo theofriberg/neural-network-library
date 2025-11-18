@@ -3,18 +3,39 @@
 
 #include <iostream>
 
-Eigen::MatrixXd DenseLayer::forward(const Eigen::MatrixXd &input)
+std::vector<Eigen::MatrixXd> DenseLayer::forwardBatch(const std::vector<Eigen::MatrixXd> &input_batch)
 {
-    _input_cache = input;
+    _input_cache = input_batch;
+    std::vector<Eigen::MatrixXd> output_batch;
+    for (const auto &input : input_batch) {
+        output_batch.push_back(singleForward(input));
+    }
+    return output_batch;
+}
+
+std::vector<Eigen::MatrixXd> DenseLayer::backwardBatch(const std::vector<Eigen::MatrixXd> &gradient_batch,
+                                   double learning_rate)
+{
+    std::vector<Eigen::MatrixXd> input_gradient_batch;
+    for (int i = 0; i < gradient_batch.size(); i++)
+    {
+        input_gradient_batch.push_back(singleBackward(gradient_batch[i], _input_cache[i], learning_rate));
+    }
+    
+    return input_gradient_batch;
+}
+
+Eigen::MatrixXd DenseLayer::singleForward(const Eigen::MatrixXd &input)
+{
     assert(_weights.cols() == input.rows());
     Eigen::MatrixXd output = _weights * input;
     output.colwise() += _biases;
     return output;
 }
 
-Eigen::MatrixXd DenseLayer::backward(const Eigen::MatrixXd &gradient, double learning_rate)
+Eigen::MatrixXd DenseLayer::singleBackward(const Eigen::MatrixXd &gradient, const Eigen::MatrixXd &input, double learning_rate)
 {
-    _weights -= learning_rate * (gradient * _input_cache.transpose());
+    _weights -= learning_rate * (gradient * input.transpose());
     _biases -= learning_rate * gradient.rowwise().sum();
     return _weights.transpose() * gradient;
 }

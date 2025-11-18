@@ -6,8 +6,8 @@
 
 class ConvolutionalLayer : public Layer {
 public:
-    ConvolutionalLayer(int kernel_size, int num_filters, std::string name)
-        : Layer(name), _kernel_size(kernel_size), _num_filters(num_filters) {
+    ConvolutionalLayer(int kernel_size, int num_filters)
+        : Layer("Conv"), _kernel_size(kernel_size), _num_filters(num_filters) {
         _kernels = std::vector<Eigen::MatrixXd>(num_filters);
         for (int i = 0; i < num_filters; ++i) {
             _kernels[i] = Eigen::MatrixXd::Random(kernel_size, kernel_size);
@@ -29,7 +29,7 @@ public:
      * @param input The input matrix to the convolutional layer.
      * @return The output matrix after applying the convolution operation.
      */
-    Eigen::MatrixXd forward(const Eigen::MatrixXd &input) override;
+    std::vector<Eigen::MatrixXd> forwardBatch(const std::vector<Eigen::MatrixXd> &input) override;
     
     /**
      * @brief Performs the backward propagation step for the convolutional layer.
@@ -43,7 +43,7 @@ public:
      *
      * @return The gradient to be passed to the previous layer.
      */
-    Eigen::MatrixXd backward(const Eigen::MatrixXd &gradient,
+    std::vector<Eigen::MatrixXd> backwardBatch(const std::vector<Eigen::MatrixXd> &gradient,
                              double learning_rate = 1) override;
 
 private:
@@ -51,7 +51,12 @@ private:
     int _num_filters;          // Number of filters in the convolutional layer
     std::vector<Eigen::MatrixXd> _kernels;  // Weights for the convolutional filters
     std::vector<double> _biases;   // Biases for the convolutional filters
-    Eigen::MatrixXd _input_cache; // Cache for the input matrix during the forward pass
+    std::vector<Eigen::MatrixXd> _input_cache; // Cache for the input vector of matrices during the forward pass
+
+    Eigen::MatrixXd singleForward(const Eigen::MatrixXd &input);
+    Eigen::MatrixXd singleBackward(const Eigen::MatrixXd &gradient,
+                                const Eigen::MatrixXd &input,
+                                double learning_rate);
 
 #ifdef UNIT_TEST
 public:
