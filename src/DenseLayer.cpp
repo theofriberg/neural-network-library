@@ -27,7 +27,9 @@ std::vector<Eigen::MatrixXd> DenseLayer::backwardBatch(const std::vector<Eigen::
 
 Eigen::MatrixXd DenseLayer::singleForward(const Eigen::MatrixXd &input)
 {
-    assert(_weights.cols() == input.rows());
+    assert(input.cols() == 1 && "DenseLayer expects a column vector");
+    assert(input.rows() == _weights.cols() && "Input vector size mismatch");
+    
     Eigen::MatrixXd output = _weights * input;
     output.colwise() += _biases;
     return output;
@@ -35,6 +37,9 @@ Eigen::MatrixXd DenseLayer::singleForward(const Eigen::MatrixXd &input)
 
 Eigen::MatrixXd DenseLayer::singleBackward(const Eigen::MatrixXd &gradient, const Eigen::MatrixXd &input, double learning_rate)
 {
+    assert(gradient.rows() == _weights.rows() && "Gradient size mismatch");
+    assert(gradient.cols() == 1 && "DenseLayer expects gradient as column vector");
+
     _weights -= learning_rate * (gradient * input.transpose());
     _biases -= learning_rate * gradient.rowwise().sum();
     return _weights.transpose() * gradient;
