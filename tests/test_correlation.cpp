@@ -18,7 +18,7 @@ TEST(CorrelationCalculatorTest, CorrelationSame) {
                 8,  9,  0;
 
 
-    Eigen::MatrixXd result = CorrelationCalculator::sameCrossCorrelate(subject, kernel);
+    Eigen::MatrixXd result = CorrelationCalculator::crossCorrelate(subject, kernel);
     EXPECT_TRUE(result.isApprox(expected));
 }
 
@@ -36,7 +36,7 @@ TEST(CorrelationCalculatorTest, CorrelationValid) {
     expected << 25, 31,
                 43, 49;
 
-    Eigen::MatrixXd result = CorrelationCalculator::validCrossCorrelate(subject, kernel);
+    Eigen::MatrixXd result = CorrelationCalculator::crossCorrelate(subject, kernel, 2, 2);
     EXPECT_TRUE(result.isApprox(expected));
 }
 
