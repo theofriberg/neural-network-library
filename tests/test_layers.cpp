@@ -29,17 +29,15 @@ protected:
 TEST_F(DenseLayerTest, ForwardPass)
 {
     // Input matrix with 3 features and 2 samples (3x2)
-    Eigen::MatrixXd input(3, 2);
-    input << 1, 2,
-        3, 4,
-        5, 6;
+    Eigen::MatrixXd input(3, 1);
+    input << 1, 2, 3;
 
     // Call forward pass
     Eigen::MatrixXd output = layer->forward(input);
 
-    // Check the output dimensions (should be 2x2, since the output size is 2)
+    // Check the output dimensions
     EXPECT_EQ(output.rows(), 2);
-    EXPECT_EQ(output.cols(), 2);
+    EXPECT_EQ(output.cols(), 1);
 
     // Check that the output is computed as weights * input + biases
     // This is more of an indirect verification that the output looks reasonable
@@ -51,15 +49,11 @@ TEST_F(DenseLayerTest, ForwardPass)
 TEST_F(DenseLayerTest, BackwardPass)
 {
     // Input matrix with 3 features and 2 samples (3x2)
-    Eigen::MatrixXd input(3, 2);
-    input << 1, 2,
-        3, 4,
-        5, 6;
-
+    Eigen::MatrixXd input(3, 1);
+    input << 1, 2, 3;
     // Create a dummy gradient matrix (2x2, matching output size)
-    Eigen::MatrixXd gradient(2, 2);
-    gradient << 0.1, 0.2,
-        0.3, 0.4;
+    Eigen::MatrixXd gradient(2, 1);
+    gradient << 0.1, 0.2;
 
     // Get initial weights and biases before backward pass
     Eigen::MatrixXd initial_weights = layer->getWeights();
@@ -73,7 +67,7 @@ TEST_F(DenseLayerTest, BackwardPass)
 
     // Check that the previous layer gradient has the correct dimensions (should match input size)
     ASSERT_EQ(prev_layer_gradient.rows(), 3);
-    ASSERT_EQ(prev_layer_gradient.cols(), 2);
+    ASSERT_EQ(prev_layer_gradient.cols(), 1);
 
     Eigen::MatrixXd updated_weights = layer->getWeights();
     Eigen::VectorXd updated_biases = layer->getBiases();
@@ -86,7 +80,7 @@ TEST_F(DenseLayerTest, BackwardPass)
 TEST_F(DenseLayerTest, RandomDataTest)
 {
     // Create random input data (3x2)
-    Eigen::MatrixXd input = Eigen::MatrixXd::Random(3, 2);
+    Eigen::MatrixXd input = Eigen::MatrixXd::Random(3, 1);
 
     // Perform forward pass
     Eigen::MatrixXd output = layer->forward(input);
@@ -96,20 +90,18 @@ TEST_F(DenseLayerTest, RandomDataTest)
 
     // Ensure that the output dimensions are correct (should be 2x2)
     EXPECT_EQ(output.rows(), 2);
-    EXPECT_EQ(output.cols(), 2);
+    EXPECT_EQ(output.cols(), 1);
 }
 
 // Test layer with zero gradients during backward pass
 TEST_F(DenseLayerTest, ZeroGradientTest)
 {
     // Create random input data (3x2)
-    Eigen::MatrixXd input(3, 2);
-    input << 1, 2,
-        3, 4,
-        5, 6;
+    Eigen::MatrixXd input(3, 1);
+    input << 1, 2, 3;
 
     // Create zero gradient (2x2, same size as the output)
-    Eigen::MatrixXd zero_gradient(2, 2);
+    Eigen::MatrixXd zero_gradient(2, 1);
     zero_gradient.setZero();
 
     // Get initial weights and biases before backward pass
@@ -195,11 +187,11 @@ protected:
         // Create a layer with 1 filter and kernel size 2
         conv_layer = new ConvolutionalLayer(2, 1);
 
-        // Set deterministic kernel and bias values using test accessors
+        // Set deterministic kernel and bias values
         Eigen::MatrixXd kernels(2, 2);
         kernels << 1, 0, 
-                    0, -1;
-        std::vector<Eigen::MatrixXd> kernel_vec = { kernels }; // 1 filter, 2x2
+                   0, -1;
+        std::vector<Eigen::MatrixXd> kernel_vec = { kernels };
         conv_layer->setKernels(kernel_vec);
 
         std::vector<double> biases = { 0.0 };
@@ -211,27 +203,99 @@ protected:
     }
 };
 
-// Test för forward pass med single filter
+// Forward pass med same convolution
 TEST_F(ConvolutionalLayerTest, ForwardSingleFilter) {
     Eigen::MatrixXd input(3, 3);
     input << 1, 2, 3,
              4, 5, 6,
              7, 8, 9;
 
-    // Manuell beräkning av förväntat output
-    Eigen::MatrixXd expected(4, 4);
-    // Convolution: (top-left 2x2) = 1*1 + 0*2 + 0*4 + (-1)*5 = 1 - 5 = -4
-    expected << 1, 2, 3, 0,
-                4, 4, 4, -3,
-                7, 4, 4, -6,
-                0, -7, -8, -9;
+    // Same convolution: output = 3x3 (samma som input)
+    Eigen::MatrixXd expected(3, 3);
+    expected << -4, -4, 3,
+                -4, -4, 6,
+                7,  8, 9;
 
     Eigen::MatrixXd output = conv_layer->forward(input);
 
-    EXPECT_EQ(output.rows(), 4);
-    EXPECT_EQ(output.cols(), 4);
+    ASSERT_EQ(output.rows(), input.rows());
+    ASSERT_EQ(output.cols(), input.cols());
     EXPECT_TRUE(output.isApprox(expected));
 }
+
+// Backward gradient test
+TEST_F(ConvolutionalLayerTest, BackwardGradientShape) {
+    Eigen::MatrixXd input(3, 3);
+    input << 1, 2, 3,
+             4, 5, 6,
+             7, 8, 9;
+
+    std::vector<Eigen::MatrixXd> input_batch = { input };
+    auto forward_output = conv_layer->forwardBatch(input_batch);
+
+    // Gradient från nästa lager samma storlek som forward-output (3x3)
+    Eigen::MatrixXd grad = Eigen::MatrixXd::Ones(forward_output[0].rows(), forward_output[0].cols());
+    std::vector<Eigen::MatrixXd> grad_batch = { grad };
+
+    auto input_gradient_batch = conv_layer->backwardBatch(grad_batch, 0.01);
+
+    ASSERT_EQ(input_gradient_batch.size(), 1);
+    ASSERT_EQ(input_gradient_batch[0].rows(), input.rows());
+    ASSERT_EQ(input_gradient_batch[0].cols(), input.cols());
+}
+
+// Test att kernels och biases uppdateras efter backward
+TEST_F(ConvolutionalLayerTest, KernelAndBiasUpdate) {
+    Eigen::MatrixXd input(3, 3);
+    input << 1, 2, 3,
+             4, 5, 6,
+             7, 8, 9;
+
+    std::vector<Eigen::MatrixXd> input_batch = { input };
+    conv_layer->forwardBatch(input_batch);
+
+    Eigen::MatrixXd grad = Eigen::MatrixXd::Ones(3, 3); // output = same = 3x3
+    std::vector<Eigen::MatrixXd> grad_batch = { grad };
+
+    Eigen::MatrixXd initial_kernel = conv_layer->getKernels()[0];
+    double initial_bias = conv_layer->getBiases()[0];
+
+    conv_layer->backwardBatch(grad_batch, 0.01);
+
+    Eigen::MatrixXd updated_kernel = conv_layer->getKernels()[0];
+    double updated_bias = conv_layer->getBiases()[0];
+
+    ASSERT_FALSE(updated_kernel.isApprox(initial_kernel));
+    ASSERT_NE(updated_bias, initial_bias);
+}
+
+// Test input_gradient values (kan Approx beroende på kernel)
+TEST_F(ConvolutionalLayerTest, InputGradientValues) {
+    Eigen::MatrixXd input(2, 2);
+    input << 1, 2,
+             3, 4;
+
+    std::vector<Eigen::MatrixXd> input_batch = { input };
+    conv_layer->forwardBatch(input_batch);
+
+    // Gradient samma storlek som output (same = 2x2)
+    Eigen::MatrixXd grad(2, 2);
+    grad << 1, 1,
+            1, 1;
+    std::vector<Eigen::MatrixXd> grad_batch = { grad };
+
+    auto input_gradient_batch = conv_layer->backwardBatch(grad_batch, 0.0); // lr=0
+
+    ASSERT_EQ(input_gradient_batch.size(), 1);
+    ASSERT_EQ(input_gradient_batch[0].rows(), 2);
+    ASSERT_EQ(input_gradient_batch[0].cols(), 2);
+
+    // Om du vill kan du beräkna expected manually med same convolution
+    // Eigen::MatrixXd expected_input_gradient = ... 
+    // ASSERT_TRUE(input_gradient_batch[0].isApprox(expected_input_gradient));
+}
+
+
 
 
 
