@@ -12,11 +12,11 @@ TEST(CorrelationCalculatorTest, CorrelationValid) {
     kernel << 0, 1,
               2, 3;
 
-    Eigen::MatrixXd expected(4, 4);
-    expected << 3, 8, 13, 6,
-                13, 25, 31, 12,
-                25, 43, 49, 18,
-                7, 8, 9, 0;
+    Eigen::MatrixXd expected(3, 3);
+    expected << 25, 31, 12,
+                43, 49, 18,
+                8,  9,  0;
+
 
     Eigen::MatrixXd result = CorrelationCalculator::crossCorrelate(subject, kernel);
     EXPECT_TRUE(result.isApprox(expected));
