@@ -9,28 +9,27 @@ Eigen::MatrixXd CorrelationCalculator::convolve(const Eigen::MatrixXd &subject, 
 Eigen::MatrixXd CorrelationCalculator::crossCorrelate(const Eigen::MatrixXd &subject, const Eigen::MatrixXd &kernel) {
     int kernel_rows = kernel.rows();
     int kernel_cols = kernel.cols();
-    int subject_rows = subject.rows();
-    int subject_cols = subject.cols();
-    if (kernel_rows > subject_rows || kernel_cols > subject_cols)
-    {
-        throw std::invalid_argument("Kernel dimension must be less than or equal to subject dimension.");
-    }
+    int pad_rows = kernel_rows - 1;
+    int pad_cols = kernel_cols - 1;
+    int pad_top = pad_rows / 2;
+    int pad_bottom = pad_rows - pad_top;
+    int pad_left = pad_cols / 2;
+    int pad_right = pad_cols - pad_left;
 
-    int pad_vert = kernel_rows - 1;
-    int pad_horizontal = kernel_cols - 1;
-    Eigen::MatrixXd padded_subject = Eigen::MatrixXd::Zero(subject_rows + 2*pad_vert, subject_cols + 2*pad_horizontal);
-    padded_subject.block(pad_vert, pad_horizontal, subject_rows, subject_cols) = subject;
-    
-    int output_rows = subject_rows + kernel_rows - 1;
-    int output_cols = subject_cols + kernel_cols - 1;
-    Eigen::MatrixXd output = Eigen::MatrixXd::Zero(output_rows, output_cols);
-    for (int i = 0; i < output_rows; i++)
+    Eigen::MatrixXd padded_subject = Eigen::MatrixXd::Zero(subject.rows() + pad_rows, subject.cols() + pad_cols);
+    padded_subject.block(pad_top, pad_left, subject.rows(), subject.cols()) = subject;
+
+    Eigen::MatrixXd output = Eigen::MatrixXd::Zero(subject.rows(), subject.cols());
+    Eigen::VectorXd kernel_vector = kernel.reshaped();
+    for (int i = 0; i < subject.rows(); i++)
     {
-        for (int j = 0; j < output_cols; j++)
+        for (int j = 0; j < subject.cols(); j++)
         {
-            Eigen::MatrixXd subject_patch = padded_subject.block(i, j, kernel_rows, kernel_cols);
-            output(i, j) = (subject_patch.array() * kernel.array()).sum();
+            Eigen::MatrixXd region = padded_subject.block(i, j, kernel_rows, kernel_cols);
+            Eigen::VectorXd region_vector = region.reshaped();
+            output(i, j) = region_vector.dot(kernel_vector);
         }
+        
     }
     
     return output;
