@@ -2,7 +2,7 @@
 #include <Eigen/Dense>
 #include "../include/CorrelationCalculator.hpp"
 
-TEST(CorrelationCalculatorTest, CorrelationValid) {
+TEST(CorrelationCalculatorTest, CorrelationSame) {
     Eigen::MatrixXd subject(3, 3);
     subject << 1, 2, 3,
                4, 5, 6,
@@ -18,7 +18,25 @@ TEST(CorrelationCalculatorTest, CorrelationValid) {
                 8,  9,  0;
 
 
-    Eigen::MatrixXd result = CorrelationCalculator::crossCorrelate(subject, kernel);
+    Eigen::MatrixXd result = CorrelationCalculator::sameCrossCorrelate(subject, kernel);
+    EXPECT_TRUE(result.isApprox(expected));
+}
+
+TEST(CorrelationCalculatorTest, CorrelationValid) {
+    Eigen::MatrixXd subject(3, 3);
+    subject << 1, 2, 3,
+               4, 5, 6,
+               7, 8, 9;
+
+    Eigen::MatrixXd kernel(2, 2);
+    kernel << 0, 1,
+              2, 3;
+
+    Eigen::MatrixXd expected(2, 2);
+    expected << 25, 31,
+                43, 49;
+
+    Eigen::MatrixXd result = CorrelationCalculator::validCrossCorrelate(subject, kernel);
     EXPECT_TRUE(result.isApprox(expected));
 }
 

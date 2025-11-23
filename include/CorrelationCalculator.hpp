@@ -6,7 +6,8 @@
 class CorrelationCalculator {
 
     public:
-        static Eigen::MatrixXd crossCorrelate(const Eigen::MatrixXd &subject, const Eigen::MatrixXd &kernel);
+        static Eigen::MatrixXd sameCrossCorrelate(const Eigen::MatrixXd &subject, const Eigen::MatrixXd &kernel);
+        static Eigen::MatrixXd validCrossCorrelate(const Eigen::MatrixXd &subject, const Eigen::MatrixXd &kernel);
         static Eigen::MatrixXd convolve(const Eigen::MatrixXd &subject, const Eigen::MatrixXd &kernel);
     
     private:
