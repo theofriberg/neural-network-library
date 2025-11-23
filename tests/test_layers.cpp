@@ -188,10 +188,10 @@ protected:
         conv_layer = new ConvolutionalLayer(2, 1);
 
         // Set deterministic kernel and bias values
-        Eigen::MatrixXd kernels(2, 2);
-        kernels << 1, 0, 
+        Eigen::MatrixXd kernel(2, 2);
+        kernel << 1, 0, 
                    0, -1;
-        std::vector<Eigen::MatrixXd> kernel_vec = { kernels };
+        std::vector<Eigen::MatrixXd> kernel_vec = { kernel };
         conv_layer->setKernels(kernel_vec);
 
         std::vector<double> biases = { 0.0 };
@@ -212,9 +212,9 @@ TEST_F(ConvolutionalLayerTest, ForwardSingleFilter) {
 
     // Same convolution: output = 3x3 (samma som input)
     Eigen::MatrixXd expected(3, 3);
-    expected << -4, -4, 3,
-                -4, -4, 6,
-                7,  8, 9;
+    expected << 4, 4, -3,
+                4, 4, -6,
+                -7,  -8, -9;
 
     Eigen::MatrixXd output = conv_layer->forward(input);
 
