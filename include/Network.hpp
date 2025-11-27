@@ -29,8 +29,8 @@ class Network
     std::function<double(Eigen::MatrixXd, Eigen::MatrixXd)> _loss_function;
     std::function<Eigen::MatrixXd(Eigen::MatrixXd, Eigen::MatrixXd)> _loss_function_prime;
 
-    Eigen::MatrixXd _forward(const Eigen::MatrixXd &input_data) const;
-    void _backward(const Eigen::MatrixXd &gradient, double learning_rate);
+    std::vector<Eigen::MatrixXd> _forward(const std::vector<Eigen::MatrixXd> &input_batch) const;
+    void _backward(const std::vector<Eigen::MatrixXd> &gradient_batch, double learning_rate);
 };
 
 #endif // NETWORK_HPP
