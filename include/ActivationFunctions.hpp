@@ -5,16 +5,16 @@
 
 namespace ActivationFunctions
 {
-    Eigen::MatrixXd relu(const Eigen::MatrixXd &matrix);
-    Eigen::MatrixXd reluPrime(const Eigen::MatrixXd &matrix);
+Eigen::MatrixXd relu(const Eigen::MatrixXd &matrix);
+Eigen::MatrixXd reluPrime(const Eigen::MatrixXd &matrix);
 
-    Eigen::MatrixXd tanh(const Eigen::MatrixXd &matrix);
-    Eigen::MatrixXd tanhPrime(const Eigen::MatrixXd &matrix);
+Eigen::MatrixXd tanh(const Eigen::MatrixXd &matrix);
+Eigen::MatrixXd tanhPrime(const Eigen::MatrixXd &matrix);
 
-    Eigen::MatrixXd sigmoid(const Eigen::MatrixXd &matrix);
-    Eigen::MatrixXd sigmoidPrime(const Eigen::MatrixXd &matrix);
+Eigen::MatrixXd sigmoid(const Eigen::MatrixXd &matrix);
+Eigen::MatrixXd sigmoidPrime(const Eigen::MatrixXd &matrix);
 
-    Eigen::MatrixXd softmax(const Eigen::MatrixXd &matrix);
-};
+Eigen::MatrixXd softmax(const Eigen::MatrixXd &matrix);
+}; // namespace ActivationFunctions
 
 #endif // ACTIVATION_FUNCTIONS_HPP

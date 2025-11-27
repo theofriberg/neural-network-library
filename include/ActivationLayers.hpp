@@ -8,25 +8,26 @@
 #include "ActivationFunctions.hpp"
 #include "ActivationLayer.hpp"
 
-class ReLU : public ActivationLayer {
-public:
-  ReLU()
-      : ActivationLayer(ActivationFunctions::relu,
-                        ActivationFunctions::reluPrime, "relu") {}
+class ReLU : public ActivationLayer
+{
+  public:
+    ReLU() : ActivationLayer(ActivationFunctions::relu, ActivationFunctions::reluPrime, "relu") {}
 };
 
-class Tanh : public ActivationLayer {
-public:
-  Tanh()
-      : ActivationLayer(ActivationFunctions::tanh,
-                        ActivationFunctions::tanhPrime, "tanh") {}
+class Tanh : public ActivationLayer
+{
+  public:
+    Tanh() : ActivationLayer(ActivationFunctions::tanh, ActivationFunctions::tanhPrime, "tanh") {}
 };
 
-class Sigmoid : public ActivationLayer {
-public:
-  Sigmoid()
-      : ActivationLayer(ActivationFunctions::sigmoid,
-                        ActivationFunctions::sigmoidPrime, "sigmoid") {}
+class Sigmoid : public ActivationLayer
+{
+  public:
+    Sigmoid()
+        : ActivationLayer(ActivationFunctions::sigmoid, ActivationFunctions::sigmoidPrime,
+                          "sigmoid")
+    {
+    }
 };
 
 #endif // ACTTIVATION_LAYERS_HPP

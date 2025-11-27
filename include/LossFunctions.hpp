@@ -5,11 +5,12 @@
 
 namespace LossFunctions
 {
-    double mse(const Eigen::MatrixXd &y_true, const Eigen::MatrixXd &y_pred);
-    Eigen::MatrixXd msePrime(const Eigen::MatrixXd &y_true, const Eigen::MatrixXd &y_pred);
+double mse(const Eigen::MatrixXd &y_true, const Eigen::MatrixXd &y_pred);
+Eigen::MatrixXd msePrime(const Eigen::MatrixXd &y_true, const Eigen::MatrixXd &y_pred);
 
-    double categoricalCrossentropy(const Eigen::MatrixXd &y_true, const Eigen::MatrixXd &y_pred);
-    Eigen::MatrixXd categoricalCrossentropyPrime(const Eigen::MatrixXd &y_true, const Eigen::MatrixXd &y_pred);
-};
+double categoricalCrossentropy(const Eigen::MatrixXd &y_true, const Eigen::MatrixXd &y_pred);
+Eigen::MatrixXd categoricalCrossentropyPrime(const Eigen::MatrixXd &y_true,
+                                             const Eigen::MatrixXd &y_pred);
+}; // namespace LossFunctions
 
 #endif // LOSS_FUNCTIONS_HPP

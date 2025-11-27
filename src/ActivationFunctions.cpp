@@ -1,5 +1,5 @@
-#include <Eigen/Dense>
 #include "../include/ActivationFunctions.hpp"
+#include <Eigen/Dense>
 
 Eigen::MatrixXd ActivationFunctions::relu(const Eigen::MatrixXd &matrix)
 {
