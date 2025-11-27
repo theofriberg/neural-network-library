@@ -2,11 +2,12 @@
 #define UNIT_TEST
 
 #include <Eigen/Dense>
+#include <iostream>
 #include "../include/DenseLayer.hpp"
 #include "../include/ActivationLayers.hpp"
 #include "../include/ConvolutionalLayer.hpp"
+#include "../include/ReshapeLayer.hpp"
 
-#include <iostream>
 
 class DenseLayerTest : public ::testing::Test
 {
@@ -295,7 +296,78 @@ TEST_F(ConvolutionalLayerTest, InputGradientValues) {
     // ASSERT_TRUE(input_gradient_batch[0].isApprox(expected_input_gradient));
 }
 
+class ReshapeLayerTest : public ::testing::Test {
+protected:
+    ReshapeLayer *reshape_layer;
 
+    void SetUp() override {
+        // Initialize ReshapeLayer to reshape from 2x2 to 4x1
+        reshape_layer = new ReshapeLayer(4, 1);
+    }
+
+    void TearDown() override {
+        delete reshape_layer;
+    }
+};
+
+TEST_F(ReshapeLayerTest, ForwardAndBackward) {
+    Eigen::MatrixXd input(2, 2);
+    input << 1, 3,
+             2, 4;
+
+    Eigen::MatrixXd expected_flattened(4, 1);
+    expected_flattened << 1,
+                          2,
+                          3,
+                          4;
+
+    std::vector<Eigen::MatrixXd> input_batch = { input };
+
+    // Test forward
+    std::vector<Eigen::MatrixXd> output_batch = reshape_layer->forwardBatch(input_batch);
+    Eigen::MatrixXd output = output_batch[0];
+
+    ASSERT_EQ(output.rows(), 4);
+    ASSERT_EQ(output.cols(), 1);
+    EXPECT_TRUE(output.isApprox(expected_flattened));
+
+    // Test backward
+    Eigen::MatrixXd gradient(4, 1);
+    gradient << 0.1,
+                0.2,
+                0.3,
+                0.4;
+    std::vector<Eigen::MatrixXd> gradient_batch = { gradient };
+    Eigen::MatrixXd expected_input_gradient(2, 2);
+    expected_input_gradient << 0.1, 0.3,
+                               0.2, 0.4;
+
+    std::vector<Eigen::MatrixXd> input_gradient_batch = reshape_layer->backwardBatch(gradient_batch, 0.01);
+    Eigen::MatrixXd input_gradient = input_gradient_batch[0];
+    ASSERT_EQ(input_gradient.rows(), 2);
+    ASSERT_EQ(input_gradient.cols(), 2);
+    EXPECT_TRUE(input_gradient.isApprox(expected_input_gradient));
+}
+
+TEST_F(ReshapeLayerTest, TestNonFlatReshape) {
+    reshape_layer = new ReshapeLayer(2, 8); // Reshape back to 2x2
+    Eigen::MatrixXd input(4, 4);
+    input << 1, 5, 9, 13,
+            2, 6, 10, 14,
+            3, 7, 11, 15,
+            4, 8, 12, 16;
+    Eigen::MatrixXd expected_reshaped(2, 8);
+    expected_reshaped << 1, 3, 5, 7, 9, 11, 13, 15,
+                         2, 4, 6, 8, 10, 12, 14, 16; 
+
+    std::vector<Eigen::MatrixXd> input_batch = { input };
+    std::vector<Eigen::MatrixXd> output_batch = reshape_layer->forwardBatch(input_batch);
+    Eigen::MatrixXd output = output_batch[0];
+    std::cout << "Output:\n" << output << std::endl;
+    ASSERT_EQ(output.rows(), 2);
+    ASSERT_EQ(output.cols(), 8);
+    EXPECT_TRUE(output.isApprox(expected_reshaped));
+}
 
 
 
