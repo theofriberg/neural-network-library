@@ -4,28 +4,24 @@
 #include <iostream>
 #include <stdexcept>
 
-void Network::train(const std::vector<Eigen::MatrixXd> &input_batch,
-                    const std::vector<Eigen::MatrixXd> &labels, int epochs, double learning_rate)
+void Network::train(const MatrixXdRM &input_batch, const MatrixXdRM &labels, int epochs,
+                    double learning_rate)
 {
+    std::cout << "Börjar träna" << std::endl;
     for (int epoch = 0; epoch < epochs; epoch++)
     {
-        double loss = 0;
-        for (int i = 0; i < input_batch.size(); i++)
+        auto predictions = _forward(input_batch);
+        auto loss_gradient = _loss_function_prime(predictions, labels);
+        _backward(loss_gradient, learning_rate);
+        if (epoch % 10 == 0)
         {
-            Eigen::Matrix y_pred = _forward(input_batch[i]);
-            loss += _loss_function(y_pred, labels[i]);
-            Eigen::MatrixXd loss_gradient = _loss_function_prime(labels[i], y_pred);
-            _backward(loss_gradient, learning_rate);
+            auto loss = _loss_function(predictions, labels);
+            std::cout << "Epoch " << epoch << ", Loss: " << loss << std::endl;
         }
-        double error = loss / input_batch.size();
-        std::cout << "Epoch: " << epoch + 1 << ", Error: " << error << std::endl;
     }
 }
 
-Eigen::MatrixXd Network::predict(const Eigen::MatrixXd &input_data) const
-{
-    return _forward(input_data);
-}
+MatrixXdRM Network::predict(const MatrixXdRM &input_batch) const { return _forward(input_batch); }
 
 void Network::saveModel(std::string &filename) const
 {
@@ -37,23 +33,23 @@ void Network::loadModel(std::string &filename)
     throw std::logic_error("loadModel() not yet implemented");
 }
 
-void Network::addLayer(Layer *layer) { _layers.push_back(layer); }
+void Network::addLayer(LayerPtr layer) { _layers.push_back(layer); }
 
 int Network::getLayerCount() const { return _layers.size(); }
 
-Eigen::MatrixXd Network::_forward(const Eigen::MatrixXd &input_data) const
+MatrixXdRM Network::_forward(const MatrixXdRM &input_batch) const
 {
-    Eigen::MatrixXd output = input_data;
-    for (auto layer : _layers)
+    MatrixXdRM output = input_batch;
+    for (auto &layer : _layers)
     {
         output = layer->forward(output);
     }
     return output;
 }
 
-void Network::_backward(const Eigen::MatrixXd &gradient, double learning_rate)
+void Network::_backward(const MatrixXdRM &gradient_batch, double learning_rate)
 {
-    Eigen::MatrixXd current_gradient = gradient;
+    MatrixXdRM current_gradient = gradient_batch;
     for (auto layer = _layers.rbegin(); layer != _layers.rend(); ++layer)
     {
         current_gradient = (*layer)->backward(current_gradient, learning_rate);

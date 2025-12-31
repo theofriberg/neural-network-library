@@ -12,13 +12,19 @@ function(add_gtest_executable test_name test_file)
   add_executable(${test_name} ${test_file})
 
   # Link the neural network library and GTest
-  target_link_libraries(${test_name} PRIVATE neural_network gtest gtest_main pthread)
+  target_link_libraries(${test_name}
+    PRIVATE neural_network
+            gtest
+            gtest_main
+            Eigen3::Eigen
+            pthread
+  )
 
   # Ensure the library is built before the tests
   add_dependencies(${test_name} neural_network)
 
   # Add include directories for tests
-  target_include_directories(${test_name} PRIVATE ${CMAKE_SOURCE_DIR}/include ${CMAKE_SOURCE_DIR}/include/Eigen)
+
   target_include_directories(${test_name} PRIVATE ${gtest_SOURCE_DIR}/include ${gtest_SOURCE_DIR})
 
   # Register the test as a CTest entry
@@ -31,3 +37,4 @@ add_gtest_executable(test-layers test_layers.cpp)
 add_gtest_executable(test-activation-fns test_activation-fns.cpp)
 add_gtest_executable(test-loss-fns test_loss-fns.cpp)
 add_gtest_executable(test-network test_network.cpp)
+add_gtest_executable(test_correlation test_correlation.cpp)

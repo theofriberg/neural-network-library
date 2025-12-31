@@ -1,15 +1,16 @@
 #ifndef LOSS_FUNCTIONS_HPP
 #define LOSS_FUNCTIONS_HPP
 
-#include "Eigen/Dense"
+#include "Types.hpp"
+#include <Eigen/Dense>
 
 namespace LossFunctions
 {
-    double mse(const Eigen::MatrixXd &y_true, const Eigen::MatrixXd &y_pred);
-    Eigen::MatrixXd msePrime(const Eigen::MatrixXd &y_true, const Eigen::MatrixXd &y_pred);
+double mse(const MatrixXdRM &y_true, const MatrixXdRM &y_pred);
+MatrixXdRM msePrime(const MatrixXdRM &y_true, const MatrixXdRM &y_pred);
 
-    double categoricalCrossentropy(const Eigen::MatrixXd &y_true, const Eigen::MatrixXd &y_pred);
-    Eigen::MatrixXd categoricalCrossentropyPrime(const Eigen::MatrixXd &y_true, const Eigen::MatrixXd &y_pred);
-};
+double categoricalCrossentropy(const MatrixXdRM &y_true, const MatrixXdRM &y_pred);
+MatrixXdRM categoricalCrossentropyPrime(const MatrixXdRM &y_true, const MatrixXdRM &y_pred);
+}; // namespace LossFunctions
 
 #endif // LOSS_FUNCTIONS_HPP

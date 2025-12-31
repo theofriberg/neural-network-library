@@ -1,20 +1,22 @@
 #ifndef ACTIVATION_FUNCTIONS_HPP
 #define ACTIVATION_FUNCTIONS_HPP
 
-#include "Eigen/Dense"
+#include "Types.hpp"
+
+#include <Eigen/Dense>
 
 namespace ActivationFunctions
 {
-    Eigen::MatrixXd relu(const Eigen::MatrixXd &matrix);
-    Eigen::MatrixXd reluPrime(const Eigen::MatrixXd &matrix);
+MatrixXdRM relu(const MatrixXdRM &matrix);
+MatrixXdRM reluPrime(const MatrixXdRM &matrix);
 
-    Eigen::MatrixXd tanh(const Eigen::MatrixXd &matrix);
-    Eigen::MatrixXd tanhPrime(const Eigen::MatrixXd &matrix);
+MatrixXdRM tanh(const MatrixXdRM &matrix);
+MatrixXdRM tanhPrime(const MatrixXdRM &matrix);
 
-    Eigen::MatrixXd sigmoid(const Eigen::MatrixXd &matrix);
-    Eigen::MatrixXd sigmoidPrime(const Eigen::MatrixXd &matrix);
+MatrixXdRM sigmoid(const MatrixXdRM &matrix);
+MatrixXdRM sigmoidPrime(const MatrixXdRM &matrix);
 
-    Eigen::MatrixXd softmax(const Eigen::MatrixXd &matrix);
-};
+MatrixXdRM softmax(const MatrixXdRM &matrix);
+}; // namespace ActivationFunctions
 
 #endif // ACTIVATION_FUNCTIONS_HPP

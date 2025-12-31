@@ -1,16 +1,15 @@
-#include "../include/Eigen/Dense"
+#include <Eigen/Dense>
 
-#include "../include/ActivationLayer.hpp"
-#include <iostream>
+#include "ActivationLayer.hpp"
 
-Eigen::MatrixXd ActivationLayer::forward(const Eigen::MatrixXd &input)
+MatrixXdRM ActivationLayer::forward(const MatrixXdRM &input)
 {
     _input_cache = input;
     return _activation_fn(input);
 }
 
-Eigen::MatrixXd ActivationLayer::backward(const Eigen::MatrixXd &gradient, double learning_rate)
+MatrixXdRM ActivationLayer::backward(const MatrixXdRM &gradient, double learning_rate)
 {
     Eigen::MatrixXd input_prime = _activation_prime(_input_cache);
-    return learning_rate * (gradient.cwiseProduct(input_prime));
+    return gradient.cwiseProduct(input_prime);
 }

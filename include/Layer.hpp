@@ -1,20 +1,22 @@
 #ifndef LAYER_HPP
 #define LAYER_HPP
 
-#include "Eigen/Dense"
+#include "Types.hpp"
 
-class Layer {
-public:
-  Layer(std::string name) : _name(name) {}
-  virtual ~Layer() = default;
-  virtual Eigen::MatrixXd forward(const Eigen::MatrixXd &input) = 0;
-  virtual Eigen::MatrixXd backward(const Eigen::MatrixXd &gradient,
-                                   double learning_rate = 1) = 0;
+#include <Eigen/Dense>
 
-  std::string getName() { return _name; }
+class Layer
+{
+  public:
+    Layer(std::string name) : _name(name) {}
+    virtual ~Layer() = default;
+    virtual MatrixXdRM forward(const MatrixXdRM &input_batch) = 0;
+    virtual MatrixXdRM backward(const MatrixXdRM &gradient_batch, double learning_rate = 1) = 0;
 
-private:
-  std::string _name;
+    std::string getName() { return _name; }
+
+  private:
+    std::string _name;
 };
 
 #endif // LAYER_HPP
