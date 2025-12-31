@@ -2,47 +2,44 @@
 #define ACTIVATION_LAYER_HPP
 
 #include "Layer.hpp"
+#include "Types.hpp"
 #include <Eigen/Dense>
 
 class ActivationLayer : public Layer
 {
   public:
-    ActivationLayer(std::function<Eigen::MatrixXd(Eigen::MatrixXd)> act_fn,
-                    std::function<Eigen::MatrixXd(Eigen::MatrixXd)> act_prime, std::string name)
+    ActivationLayer(MatrixXdRMValuedFunc act_fn, MatrixXdRMValuedFunc act_prime, std::string name)
         : Layer(name), _activation_fn(act_fn), _activation_prime(act_prime)
     {
     }
 
     /**
      * @brief Performs the forward propagation step for the activation layer.
-     * This function applies the activation function to the input matrix and
-     * caches the input for use in the backward pass.
-     * @param input Vector of input matrices to the layer.
+     * This function applies the activation function to the input and caches
+     * the input for use in the backward pass.
+     * @param input_batch Matrix of input data where every col is a single input.
      * @return The output matrix after applying the activation function.
      */
-    std::vector<Eigen::MatrixXd>
-    forwardBatch(const std::vector<Eigen::MatrixXd> &input_batch) override;
+    MatrixXdRM forward(const MatrixXdRM &input_batch) override;
 
     /**
      * @brief Performs the backward propagation step for the activation layer.
      * This function computes the gradient of the loss with respect to the input
-     * by applying the derivative of the activation function to the cached input.
-     * @param gradient Vector of gradient matrices from the next layer.
-     * @param learning_rate The learning rate for scaling the gradient.
-     * @return The gradient matrix with respect to the input of this layer.
+     * of the activation layer using the cached input from the forward pass and
+     * the derivative of the activation function.
+     * @param gradient_batch Matrix of gradients from the next layer where every col is a single
+     * gradient.
+     * @param learning_rate The learning rate (not used in activation layers but included for
+     * interface consistency).
+     * @return A matrix of gradients with respect to the input of this layer.
      */
-    std::vector<Eigen::MatrixXd> backwardBatch(const std::vector<Eigen::MatrixXd> &gradient_batch,
-                                               double learning_rate = 1) override;
+    MatrixXdRM backward(const MatrixXdRM &gradient_batch, double learning_rate = 1) override;
 
   private:
     // Activation function and its derivative
-    std::function<Eigen::MatrixXd(Eigen::MatrixXd)> _activation_fn;
-    std::function<Eigen::MatrixXd(Eigen::MatrixXd)> _activation_prime;
-    std::vector<Eigen::MatrixXd> _input_cache; // Cache for the input matrix during the forward pass
-
-    Eigen::MatrixXd singleForward(const Eigen::MatrixXd &input);
-    Eigen::MatrixXd singleBackward(const Eigen::MatrixXd &gradient, const Eigen::MatrixXd &input,
-                                   double learning_rate);
+    MatrixXdRMValuedFunc _activation_fn;
+    MatrixXdRMValuedFunc _activation_prime;
+    MatrixXdRM _input_cache; // Cache for the input matrix during the forward pass
 };
 
 #endif // ACTIVATION_LAYER_HPP

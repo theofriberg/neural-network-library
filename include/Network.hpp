@@ -2,35 +2,37 @@
 #define NETWORK_HPP
 
 #include "Layer.hpp"
+#include "Types.hpp"
 #include <Eigen/Dense>
 #include <vector>
+
+using LayerPtr = std::shared_ptr<Layer>;
 
 class Network
 {
   public:
-    Network(std::function<double(Eigen::MatrixXd, Eigen::MatrixXd)> loss_fn,
-            std::function<Eigen::MatrixXd(Eigen::MatrixXd, Eigen::MatrixXd)> loss_fn_prime)
+    Network(LossFunction loss_fn, LossFunctionPrime loss_fn_prime)
         : _loss_function(loss_fn), _loss_function_prime(loss_fn_prime)
     {
     }
 
-    void train(const std::vector<Eigen::MatrixXd> &input_batch,
-               const std::vector<Eigen::MatrixXd> &labels, int epochs, double learning_rate);
-    Eigen::MatrixXd predict(const Eigen::MatrixXd &input_data) const;
-    void addLayer(Layer *layer);
+    void train(const MatrixXdRM &input_batch, const MatrixXdRM &labels, int epochs,
+               double learning_rate);
+    MatrixXdRM predict(const MatrixXdRM &input_batch) const;
+    void addLayer(LayerPtr layer);
     void saveModel(std::string &filename) const;
     void loadModel(std::string &filename);
     int getLayerCount() const;
 
   private:
-    std::vector<Layer *> _layers;
+    std::vector<LayerPtr> _layers;
 
     // Loss function and its derivative
-    std::function<double(Eigen::MatrixXd, Eigen::MatrixXd)> _loss_function;
-    std::function<Eigen::MatrixXd(Eigen::MatrixXd, Eigen::MatrixXd)> _loss_function_prime;
+    LossFunction _loss_function;
+    LossFunctionPrime _loss_function_prime;
 
-    std::vector<Eigen::MatrixXd> _forward(const std::vector<Eigen::MatrixXd> &input_batch) const;
-    void _backward(const std::vector<Eigen::MatrixXd> &gradient_batch, double learning_rate);
+    MatrixXdRM _forward(const MatrixXdRM &input_batch) const;
+    void _backward(const MatrixXdRM &gradient_batch, double learning_rate);
 };
 
 #endif // NETWORK_HPP

@@ -2,16 +2,15 @@
 #include <algorithm>
 #include <iostream>
 
-Eigen::MatrixXd CorrelationCalculator::convolve(const Eigen::MatrixXd &subject,
-                                                const Eigen::MatrixXd &kernel)
+MatrixXdRM CorrelationCalculator::convolve(const MatrixXdRM &subject, const MatrixXdRM &kernel)
 {
-    Eigen::MatrixXd kernel_rot = rotate180(kernel);
+    MatrixXdRM kernel_rot = rotate180(kernel);
     return crossCorrelate(subject, kernel_rot);
 }
 
-Eigen::MatrixXd CorrelationCalculator::crossCorrelate(const Eigen::MatrixXd &subject,
-                                                      const Eigen::MatrixXd &kernel,
-                                                      int output_rows, int output_cols)
+MatrixXdRM CorrelationCalculator::crossCorrelate(const MatrixXdRM &subject,
+                                                 const MatrixXdRM &kernel, int output_rows,
+                                                 int output_cols)
 {
     if (output_rows == -1)
         output_rows = subject.rows();
@@ -25,18 +24,18 @@ Eigen::MatrixXd CorrelationCalculator::crossCorrelate(const Eigen::MatrixXd &sub
     int pad_left = pad_cols_total / 2;
     int pad_right = pad_cols_total - pad_left;
 
-    Eigen::MatrixXd padded_subject =
-        Eigen::MatrixXd::Zero(subject.rows() + pad_rows_total, subject.cols() + pad_cols_total);
+    MatrixXdRM padded_subject =
+        MatrixXdRM::Zero(subject.rows() + pad_rows_total, subject.cols() + pad_cols_total);
     padded_subject.block(pad_top, pad_left, subject.rows(), subject.cols()) = subject;
 
-    Eigen::MatrixXd output = Eigen::MatrixXd::Zero(output_rows, output_cols);
-    Eigen::VectorXd kernel_vector = kernel.reshaped();
+    MatrixXdRM output = MatrixXdRM::Zero(output_rows, output_cols);
+    VectorXd kernel_vector = kernel.reshaped();
     for (int i = 0; i < output_rows; i++)
     {
         for (int j = 0; j < output_cols; j++)
         {
-            Eigen::MatrixXd region = padded_subject.block(i, j, kernel.rows(), kernel.cols());
-            Eigen::VectorXd region_vector = region.reshaped();
+            MatrixXdRM region = padded_subject.block(i, j, kernel.rows(), kernel.cols());
+            VectorXd region_vector = region.reshaped();
             output(i, j) = region_vector.dot(kernel_vector);
         }
     }
@@ -44,7 +43,7 @@ Eigen::MatrixXd CorrelationCalculator::crossCorrelate(const Eigen::MatrixXd &sub
     return output;
 }
 
-Eigen::MatrixXd CorrelationCalculator::rotate180(const Eigen::MatrixXd &matrix)
+MatrixXdRM CorrelationCalculator::rotate180(const MatrixXdRM &matrix)
 {
     return matrix.colwise().reverse().rowwise().reverse();
 }

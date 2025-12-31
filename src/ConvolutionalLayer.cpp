@@ -1,76 +1,73 @@
-#include "../include/ConvolutionalLayer.hpp"
-#include "../include/CorrelationCalculator.hpp"
+#include "ConvolutionalLayer.hpp"
+#include "CorrelationCalculator.hpp"
 
-#include <iostream>
-
-std::vector<Eigen::MatrixXd>
-ConvolutionalLayer::forwardBatch(const std::vector<Eigen::MatrixXd> &input)
+MatrixXdRM ConvolutionalLayer::forward(const MatrixXdRM &input)
 {
     _input_cache = input;
-    std::vector<Eigen::MatrixXd> output_batch;
-    output_batch.reserve(input.size());
-    for (const auto &input_matrix : input)
+    MatrixXdRM output(_num_filters * _input_width * _input_height, input.cols());
+    for (int b = 0; b < input.cols(); ++b)
     {
-        output_batch.push_back(singleForward(input_matrix));
-    }
-    return output_batch;
-}
-
-std::vector<Eigen::MatrixXd>
-ConvolutionalLayer::backwardBatch(const std::vector<Eigen::MatrixXd> &gradient_batch,
-                                  double learning_rate)
-{
-    std::vector<Eigen::MatrixXd> input_gradient_batch;
-    input_gradient_batch.reserve(gradient_batch.size());
-    for (int i = 0; i < gradient_batch.size(); i++)
-    {
-        input_gradient_batch.push_back(
-            singleBackward(gradient_batch[i], _input_cache[i], learning_rate));
-    }
-
-    return input_gradient_batch;
-}
-
-Eigen::MatrixXd ConvolutionalLayer::singleForward(const Eigen::MatrixXd &input)
-{
-    int input_rows = input.rows();
-    int input_cols = input.cols();
-
-    Eigen::MatrixXd output(input_rows, input_cols * _num_filters);
-
-    for (int f = 0; f < _num_filters; ++f)
-    {
-        output.block(0, f * input_cols, input_rows, input_cols) =
-            CorrelationCalculator::convolve(input, _kernels[f]);
+        MatrixXdRM single_input = input.col(b).reshaped(_input_height, _input_width);
+        MatrixXdRM output_feature_map(_num_filters, _input_width * _input_height);
+        for (int f = 0; f < _num_filters; ++f)
+        {
+            MatrixXdRM convolved = CorrelationCalculator::convolve(single_input, _kernels[f]);
+            assert(convolved.rows() == _input_height && convolved.cols() == _input_width &&
+                   "Convolved output has incorrect dimensions.");
+            convolved.array() += _biases[f];
+            output_feature_map.row(f) =
+                Eigen::Map<Eigen::RowVectorXd>(convolved.data(), convolved.size());
+        }
+        output.col(b) = Eigen::Map<VectorXd>(output_feature_map.data(), output_feature_map.size());
     }
 
     return output;
 }
 
-Eigen::MatrixXd ConvolutionalLayer::singleBackward(const Eigen::MatrixXd &gradient,
-                                                   const Eigen::MatrixXd &input,
-                                                   double learning_rate)
+MatrixXdRM ConvolutionalLayer::backward(const MatrixXdRM &gradient, double learning_rate)
 {
-    int input_rows = input.rows();
-    int input_cols = input.cols();
+    MatrixXdRM input_gradient = MatrixXdRM::Zero(_input_width * _input_height, gradient.cols());
+    std::vector<MatrixXdRM> kernel_gradients(_num_filters,
+                                             MatrixXdRM::Zero(_kernel_size, _kernel_size));
+    std::vector<double> bias_gradients(_num_filters, 0.0);
 
-    Eigen::MatrixXd input_gradient = Eigen::MatrixXd::Zero(input_rows, input_cols);
+    for (int b = 0; b < gradient.cols(); ++b)
+    {
+        MatrixXdRM single_input = _input_cache.col(b).reshaped(_input_height, _input_width);
+        MatrixXdRM single_gradient =
+            gradient.col(b).reshaped(_num_filters, _input_width * _input_height);
 
-    int output_cols = gradient.cols() / _num_filters;
+        for (int f = 0; f < _num_filters; ++f)
+        {
+            MatrixXdRM grad_feature_map =
+                Eigen::Map<MatrixXdRM>(single_gradient.row(f).data(), _input_height, _input_width);
 
-    std::cout << "Input:\n" << input << std::endl;
+            // Compute input gradient
+            MatrixXdRM input_grad_part =
+                CorrelationCalculator::convolve(grad_feature_map, _kernels[f]);
+            input_gradient.col(b) +=
+                Eigen::Map<VectorXd>(input_grad_part.data(), input_grad_part.size());
 
-    std::cout << "Gradient cols: " << gradient.cols() << ", output_cols: " << output_cols
-              << std::endl;
+            // Accumulate kernel and bias gradients
+            MatrixXdRM full_grad =
+                CorrelationCalculator::crossCorrelate(single_input, grad_feature_map);
+
+            // Skär ut den centrala _kernel_size x _kernel_size delen
+            int start_row = (full_grad.rows() - _kernel_size) / 2;
+            int start_col = (full_grad.cols() - _kernel_size) / 2;
+            MatrixXdRM grad_kernel =
+                full_grad.block(start_row, start_col, _kernel_size, _kernel_size);
+            kernel_gradients[f] += grad_kernel;
+
+            bias_gradients[f] += grad_feature_map.sum();
+        }
+    }
+    // Update kernels and biases
     for (int f = 0; f < _num_filters; ++f)
     {
-        Eigen::MatrixXd grad_slice =
-            gradient.block(0, f * output_cols, gradient.rows(), output_cols);
-        input_gradient += CorrelationCalculator::convolve(grad_slice, _kernels[f]);
-        _kernels[f] -= learning_rate * CorrelationCalculator::crossCorrelate(input, grad_slice,
-                                                                             _kernels[f].rows(),
-                                                                             _kernels[f].cols());
-        _biases[f] -= learning_rate * grad_slice.sum();
+        int batch_size = _input_cache.cols();
+        _kernels[f] -= learning_rate * kernel_gradients[f] / batch_size;
+        _biases[f] -= learning_rate * bias_gradients[f] / batch_size;
     }
 
     return input_gradient;
